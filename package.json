@@ -1,0 +1,10 @@
+{
+  "name": "payday",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "kanedaaaa <samflynn19121@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^4.8.3"
+  }
+}
