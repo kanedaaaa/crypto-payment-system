@@ -1,0 +1,1 @@
+Small script that can automatically split and send crypto payments to several addresses 
