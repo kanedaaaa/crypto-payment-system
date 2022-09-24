@@ -1,0 +1,14 @@
+[
+    {
+        "address": "0x0",
+        "amount": 1000
+    },
+    {
+        "address": "0x1",
+        "amount": 2000
+    },
+    {
+        "address": "0x2",
+        "amount": 3000
+    }
+]
