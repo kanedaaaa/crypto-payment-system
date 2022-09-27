@@ -35,38 +35,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ethers_1 = require("ethers");
-const ERC20_json_1 = __importDefault(require("./abi/ERC20.json"));
-const config_1 = __importDefault(require("./config"));
-const fs_1 = __importDefault(require("fs"));
-const dbQuery_1 = require("./hasura/dbQuery");
-const dbQueries_1 = require("./hasura/dbQueries");
+exports.dbQuery = void 0;
+const axios_1 = __importDefault(require("axios"));
+const graphql_1 = require("graphql");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-let provider;
-let contract;
-if (config_1.default.testing) {
-    provider = new ethers_1.ethers.providers.JsonRpcProvider(process.env.infuraTest);
-    contract = new ethers_1.ethers.Contract(config_1.default.usdcTestnet, ERC20_json_1.default, provider);
-}
-else {
-    provider = new ethers_1.ethers.providers.JsonRpcProvider(process.env.infura);
-    contract = new ethers_1.ethers.Contract(config_1.default.usdc, ERC20_json_1.default, provider);
-}
-const signer = new ethers_1.ethers.Wallet(process.env.privKey, provider);
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Starting...");
-    const { employees } = yield (0, dbQuery_1.dbQuery)(dbQueries_1.getAllEmployees);
-    for (const emp of employees) {
+function dbQuery(query, variables = {}) {
+    return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield contract.connect(signer).transfer(emp.walletAddress, ethers_1.ethers.utils.parseUnits(emp.salaryAmount.toString(), 18));
-            console.log(`Sent ${emp.salaryAmount} USDC to ${emp.walletAddress}`);
+            const response = yield axios_1.default.post(process.env.hasuraUrl, {
+                query: (0, graphql_1.print)(query),
+                variables: variables,
+            }, {
+                headers: {
+                    "x-hasura-admin-secret": process.env.hasuraPrivKey,
+                },
+            });
+            if (response.data.errors) {
+                console.error(response.data.errors);
+                throw new Error(`Error making database call: ${JSON.stringify(response.data.errors)}`);
+            }
+            return response.data.data;
         }
         catch (error) {
-            console.log("Error occured, saving details errors/failedtosend.txt");
-            console.log(error);
-            fs_1.default.appendFileSync("src/errors/failedtosend.txt", `${emp.walletAddress} - ${emp.salaryAmount} USDC \n`);
+            console.error(error);
+            throw new Error(`Error making db query: ${JSON.stringify(error)}`);
         }
-    }
-});
-main();
+    });
+}
+exports.dbQuery = dbQuery;
