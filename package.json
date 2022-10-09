@@ -5,10 +5,12 @@
   "author": "kanedaaaa <samflynn19121@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/express": "^4.17.14",
     "@types/node": "^18.7.18",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "ethers": "^5.7.1",
+    "express": "^4.18.2",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "typescript": "^4.8.3"
